@@ -1,4 +1,4 @@
-const { src, dest, watch } = require('gulp');
+const { src, dest, watch, series } = require('gulp');
 const minify = require('gulp-minify');
 const sass = require('gulp-sass');
 
@@ -20,8 +20,18 @@ function js() {
     .pipe(dest('./dist/js'));
 }
 
-// exports.build = parallel(css, js);
-exports.default = function () {
+function html() {
+  return src('src/*html').pipe(dest('./dist'));
+}
+
+function images() {
+  return src('src/images/**.*').pipe(dest('./dist/images'));
+}
+
+function watchFiles() {
+  watch('src/*.html', html);
   watch('src/sass', css);
   watch('src/js', js);
-};
+}
+
+exports.default = series(html, css, js, images, watchFiles);
